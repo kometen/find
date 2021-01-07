@@ -21,6 +21,18 @@ fn f(path: String) -> io::Result<()> {
     Ok(())
 }
 
+struct Arguments {
+    path: String,
+}
+
+impl Arguments {
+    fn new(path: String) -> Self {
+        Arguments {
+            path,
+        }
+    }
+}
+
 fn main() {
     // Command line parameters.
     let matches = App::new("find")
@@ -37,9 +49,11 @@ fn main() {
         )
         .get_matches();
 
-    let file = matches.value_of("file hierarchy").unwrap();
+    let path = matches.value_of("file hierarchy").unwrap();
+
+    let arguments = Arguments::new(path.to_string());
 
     println!("find-command in rust");
 
-    let _r = f(file.to_string());
+    let _r = f(arguments.path);
 }
