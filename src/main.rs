@@ -58,12 +58,13 @@ fn main() {
         )
         .get_matches();
 
-    let paths: Vec<_> = matches.values_of("file hierarchy").unwrap().collect();
     let sort: bool = matches.is_present("sort");
-
     let arguments = Arguments::new(sort);
 
-    for path in paths {
-        let _r = f(path.to_string(), &arguments);
+    if matches.is_present("file hierarchy") {
+        let paths: Vec<_> = matches.values_of("file hierarchy").unwrap().collect();
+        for path in paths {
+            let _r = f(path.to_string(), &arguments);
+        }
     }
 }
