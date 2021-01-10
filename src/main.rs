@@ -63,7 +63,5 @@ fn main() {
 
     let arguments = Arguments::new(sort);
 
-    println!("find-command in rust");
-
     let _r = f(path.to_string(), &arguments);
 }
