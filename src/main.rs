@@ -46,7 +46,7 @@ fn main() {
             .required(false)
             .takes_value(true)
             .short("f")
-            .multiple(false)
+            .multiple(true)
             .default_value(".")
         )
         .arg(Arg::with_name("sort")
