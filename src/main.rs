@@ -66,5 +66,7 @@ fn main() {
         for path in paths {
             let _r = f(path.to_string(), &arguments);
         }
+    } else {
+        println!("{}", matches.usage());
     }
 }
