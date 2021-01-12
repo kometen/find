@@ -39,6 +39,7 @@ fn main() {
     // Command line parameters.
     let matches = App::new("find")
         .version("0.1")
+        .usage("find [-f path] path ...")
         .about("rust-version of the find-command")
         .author("Claus Guttesen")
         .arg(Arg::with_name("file hierarchy")
