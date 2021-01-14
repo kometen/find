@@ -42,6 +42,9 @@ fn main() {
         .usage("find [-f path] path ...")
         .about("rust-version of the find-command")
         .author("Claus Guttesen")
+        .arg(Arg::with_name("path")
+            .multiple(true)
+        )
         .arg(Arg::with_name("file hierarchy")
             .help("search-path to traverse")
             .required(false)
@@ -64,6 +67,11 @@ fn main() {
 
     if matches.is_present("file hierarchy") {
         let paths: Vec<_> = matches.values_of("file hierarchy").unwrap().collect();
+        for path in paths {
+            let _r = f(path.to_string(), &arguments);
+        }
+    } else if matches.is_present("path") {
+        let paths: Vec<_> = matches.values_of("path").unwrap().collect();
         for path in paths {
             let _r = f(path.to_string(), &arguments);
         }
