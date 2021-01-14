@@ -51,6 +51,7 @@ fn main() {
             .takes_value(true)
             .short("f")
             .multiple(true)
+            .conflicts_with("path")
         )
         .arg(Arg::with_name("sort")
             .help("alphabetical sort")
