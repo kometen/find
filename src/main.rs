@@ -2,8 +2,12 @@ extern crate clap;
 
 use clap::{Arg, App};
 use std::{fs, io};
+use std::process::exit;
+use std::time::SystemTime;
 
 fn f(path: String, arguments: &Arguments) -> io::Result<()> {
+    let sys_time = SystemTime::now();
+
     let mut entries = fs::read_dir(path)?
         .map(|res| res.map(|e| e.path()))
         .collect::<Result<Vec<_>, io::Error>>()?;
@@ -17,7 +21,16 @@ fn f(path: String, arguments: &Arguments) -> io::Result<()> {
             println!("{}/", entry.display());
             f(entry.display().to_string(), arguments)?;
         } else {
-            println!("{}", entry.display());
+            let metadata = fs::metadata(&entry)?;
+            if let Ok(time) = metadata.created() {
+                let file_seconds = time.duration_since(SystemTime::UNIX_EPOCH).unwrap();
+                let file_minutes = file_seconds / 60;
+                let system_minute = sys_time.duration_since(SystemTime::UNIX_EPOCH).unwrap() / 60;
+                if system_minute.as_secs() == (file_minutes.as_secs() + arguments.bmin.1 as u64) {
+                    println!("seconds: {}, minutes: {}, sys-minutes: {}", file_seconds.as_secs(), file_minutes.as_secs(), system_minute.as_secs());
+                    println!("{}", &entry.display());
+                }
+            }
         }
     }
     Ok(())
@@ -52,17 +65,24 @@ fn split_parameter(p: &str) -> Condition {
         };
         let d: i32 = match last.parse::<i32>() {
             Ok(n) => n.abs(),
-            Err(_) => -1,
+            Err(_) => {
+                eprintln!("Unable to parse parameter, exiting");
+                exit(-1);
+            },
         };
         let condition = Condition(operator.to_string(), d);
         condition
     } else {
-        let operator = "eq".to_string();
-        let d: i32 = match p.parse::<i32>() {
-            Ok(n) => n.abs(),
-            Err(_) => -1,
+        let (o, d) = match p.parse::<i32>() {
+            Ok(n) => {
+                ("eq".to_string(), n.abs())
+            },
+            Err(_) => {
+                eprintln!("Unable to parse parameter, exiting");
+                exit(-1);
+            },
         };
-        let condition = Condition(operator.to_string(), d);
+        let condition = Condition(o, d);
         condition
     }
 }
@@ -117,15 +137,9 @@ fn main() {
             c
         },
     };
-//    println!("bmin.0: {}, bmin.1: {}", bmin_condition.0, bmin_condition.1);
+    println!("bmin.0: {}, bmin.1: {}", bmin_condition.0, bmin_condition.1);
 
     let arguments = Arguments::new(Some(sort), Some(bmin_condition));
-
-/*    if matches.is_present("Bmin") {
-        let p = matches.value_of("Bmin").unwrap();
-        let condition: Condition = split_parameter(p);
-        let arguments = Arguments::new(Some(sort), Some(condition));
-    }*/
 
     if matches.is_present("file hierarchy") {
         let paths: Vec<_> = matches.values_of("file hierarchy").unwrap().collect();
