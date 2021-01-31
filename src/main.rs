@@ -105,15 +105,27 @@ fn main() {
         )
         .get_matches();
 
-    let sort: bool = matches.is_present("sort");
-    let condition: Condition = Condition("a".to_string(), 1);
-    let arguments = Arguments::new(Some(sort), Some(condition));
+    let sort = matches.is_present("sort");
 
-    if matches.is_present("Bmin") {
+    let bmin_condition= match matches.value_of("Bmin") {
+        Some(bmin_condition) => {
+            let c = split_parameter(matches.value_of("Bmin").unwrap());
+            c
+        },
+        None => {
+            let c = split_parameter("-1");
+            c
+        },
+    };
+//    println!("bmin.0: {}, bmin.1: {}", bmin_condition.0, bmin_condition.1);
+
+    let arguments = Arguments::new(Some(sort), Some(bmin_condition));
+
+/*    if matches.is_present("Bmin") {
         let p = matches.value_of("Bmin").unwrap();
         let condition: Condition = split_parameter(p);
         let arguments = Arguments::new(Some(sort), Some(condition));
-    }
+    }*/
 
     if matches.is_present("file hierarchy") {
         let paths: Vec<_> = matches.values_of("file hierarchy").unwrap().collect();
