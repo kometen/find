@@ -128,7 +128,7 @@ fn main() {
     let sort = matches.is_present("sort");
 
     let bmin_condition= match matches.value_of("Bmin") {
-        Some(bmin_condition) => {
+        Some(_bmin_condition) => {
             let c = split_parameter(matches.value_of("Bmin").unwrap());
             c
         },
